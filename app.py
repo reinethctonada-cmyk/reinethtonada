@@ -1,106 +1,112 @@
-from flask import Flask, jsonify
+from flask import Flask, request, render_template_string, redirect, url_for
 
 app = Flask(__name__)
 
-# Modern HTML and CSS stored in a variable
-HTML_TEMPLATE = """
+# This list stores the students you add
+students = [
+    {"name": "Reineth C. Toñada", "grade": "10", "section": "Zechariah", "address": "Brgy. Anabo, Lemery, Iloilo"}
+]
+
+HTML_PAGE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reineth C. Toñada | Profile</title>
+    <title>Student Registry</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
+        body { 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            min-height: 100vh; 
+            font-family: 'Segoe UI', sans-serif; 
+            padding: 40px 20px;
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
         }
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            background: #00d2ff;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: bold;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
-        }
-        h1 { font-size: 1.8rem; margin-bottom: 5px; }
-        .location { color: #bdc3c7; font-size: 0.9rem; margin-bottom: 25px; }
-        .stat-box {
-            background: rgba(255, 255, 255, 0.05);
+        .student-item {
+            background: #ffffff;
+            border-left: 5px solid #1e3c72;
             border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .label { font-size: 0.7rem; text-transform: uppercase; color: #00d2ff; display: block; }
-        .value { font-size: 1.1rem; font-weight: 500; }
+        .btn-primary { background: #1e3c72; border: none; }
+        .btn-primary:hover { background: #2a5298; }
+        label { font-weight: 600; color: #333; }
     </style>
 </head>
 <body>
+
+<div class="container" style="max-width: 700px;">
     <div class="glass-card">
-        <div class="profile-img">R</div>
-        <h1>Reineth C. Toñada</h1>
-        <p class="location">Brgy. Anabo, Lemery, Iloilo</p>
-        
-        <div class="stat-box">
-            <span class="label">Age</span>
-            <span class="value">24 Years Old</span>
-        </div>
-        
-        <div class="row g-2">
-            <div class="col-6">
-                <div class="stat-box">
-                    <span class="label">Grade</span>
-                    <span class="value">10</span>
+        <h2 class="text-center mb-4">Student Entry Form</h2>
+        <form action="/add" method="POST">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label>Full Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Reineth C. Toñada" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Grade Level</label>
+                    <input type="text" name="grade" class="form-control" placeholder="e.g. 10" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Section</label>
+                    <input type="text" name="section" class="form-control" placeholder="e.g. Zechariah" required>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label>Address</label>
+                    <input type="text" name="address" class="form-control" placeholder="Brgy. Anabo, Lemery" required>
                 </div>
             </div>
-            <div class="col-6">
-                <div class="stat-box">
-                    <span class="label">Section</span>
-                    <span class="value">Zechariah</span>
-                </div>
-            </div>
-        </div>
+            <button type="submit" class="btn btn-primary w-100 py-2">Save Student Info</button>
+        </form>
     </div>
+
+    <div class="glass-card">
+        <h3 class="mb-4">Registered Students</h3>
+        {% for s in student_list %}
+        <div class="student-item">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-primary">{{ s.name }}</h5>
+                <span class="badge bg-secondary">Grade {{ s.grade }} - {{ s.section }}</span>
+            </div>
+            <p class="mb-0 text-muted mt-1 small">📍 {{ s.address }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 </body>
 </html>
 """
 
 @app.route('/')
-def home():
-    return HTML_TEMPLATE
+def index():
+    return render_template_string(HTML_PAGE, student_list=students)
 
-@app.route('/student')
-def get_student():
-    return jsonify({
-        "name": "Reineth C. Toñada",
-        "grade": 10,
-        "section": "Zechariah",
-        "age": 24,
-        "address": "Brgy. Anabo, Lemery, Iloilo"
-    })
+@app.route('/add', methods=['POST'])
+def add_student():
+    # Fetching the data from the form inputs
+    new_student = {
+        "name": request.form.get('name'),
+        "grade": request.form.get('grade'),
+        "section": request.form.get('section'),
+        "address": request.form.get('address')
+    }
+    
+    # Adding to our temporary list
+    students.append(new_student)
+    
+    # Redirect back to home to see the update
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
