@@ -4,23 +4,23 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    # We pass your personal details directly to the HTML template
-    student_data = {
+    # Ensure these keys match exactly what is in your HTML {{ student.name }} etc.
+    student_info = {
         "name": "Reineth C. Toñada",
         "location": "Brgy. Anobo, Lemery, Iloilo",
         "age": 24,
         "grade": 10,
         "section": "Zechariah"
     }
-    return render_template('index.html', student=student_data)
+    try:
+        return render_template('index.html', student=student_info)
+    except Exception as e:
+        return f"Error: Could not find index.html in the templates folder. {str(e)}"
 
-# Keeping your API endpoint functional
-@app.route('/api/student')
-def get_student_api():
+@app.route('/student')
+def get_student():
     return jsonify({
         "name": "Reineth C. Toñada",
-        "age": 24,
-        "location": "Brgy. Anobo, Lemery, Iloilo",
         "grade": 10,
         "section": "Zechariah"
     })
