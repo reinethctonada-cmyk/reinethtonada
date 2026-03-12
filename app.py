@@ -2,7 +2,7 @@ from flask import Flask, request, render_template_string, redirect, url_for
 
 app = Flask(__name__)
 
-# Data storage
+# Initial Data
 students = [
     {
         "name": "Reineth C. Toñada", 
@@ -23,110 +23,45 @@ HTML_PAGE = """
     <title>Student Portal | Modern UI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --glass: rgba(255, 255, 255, 0.2);
-            --glass-heavy: rgba(255, 255, 255, 0.95);
-        }
         body { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
-            font-family: 'Inter', -apple-system, sans-serif;
-            color: #2d3436;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 40px 0;
+            color: #333;
         }
         .glass-card {
-            background: var(--glass-heavy);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             margin-bottom: 30px;
         }
-        .header-title {
-            color: white;
-            font-weight: 800;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-        }
-        .form-control, .form-select {
-            border-radius: 12px;
-            border: 1px solid #dfe6e9;
-            padding: 12px;
-            background: #fdfdfd;
-        }
-        .form-control:focus {
-            box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.2);
-            border-color: #764ba2;
-        }
-        .btn-submit {
-            background: linear-gradient(to right, #667eea, #764ba2);
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-weight: 600;
-            color: white;
-            transition: transform 0.2s;
-        }
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            color: white;
-        }
-        .table {
-            border-collapse: separate;
-            border-spacing: 0 10px;
-        }
-        .table thead th {
-            border: none;
-            color: #636e72;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .student-row {
-            background: #ffffff;
-            transition: all 0.3s ease;
-        }
-        .student-row td {
-            padding: 20px;
-            vertical-align: middle;
-            border: none;
-        }
-        .student-row td:first-child { border-radius: 15px 0 0 15px; }
-        .student-row td:last-child { border-radius: 0 15px 15px 0; }
-        
-        .badge-pass { background: #d1f7e8; color: #10ac84; padding: 8px 16px; border-radius: 10px; font-weight: 700; }
-        .badge-fail { background: #ffd9d9; color: #ee5253; padding: 8px 16px; border-radius: 10px; font-weight: 700; }
-        
-        .delete-icon {
-            color: #ff7675;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 12px;
-            border-radius: 8px;
-        }
-        .delete-icon:hover {
-            background: #fff5f5;
-            color: #d63031;
-        }
+        .header-text { color: white; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .table thead { background: #f8f9fa; }
+        .badge-pass { background: #28a745; color: white; padding: 5px 12px; border-radius: 50px; font-size: 0.8rem; }
+        .badge-fail { background: #dc3545; color: white; padding: 5px 12px; border-radius: 50px; font-size: 0.8rem; }
+        .btn-add { background: #1e3c72; color: white; border: none; font-weight: 600; }
+        .btn-add:hover { background: #2a5298; color: white; }
+        .delete-link { color: #dc3545; text-decoration: none; font-weight: 600; }
+        .delete-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="container" style="max-width: 900px;">
-    <h1 class="text-center header-title">Student Management System</h1>
+    <h1 class="text-center header-text mb-4">Student Management System</h1>
 
     <div class="glass-card">
-        <h4 class="mb-4" style="color: #2d3436; font-weight: 700;">Add New Record</h4>
+        <h4 class="mb-3">Register New Record</h4>
         <form action="/add" method="POST">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label small fw-bold">FULL NAME</label>
-                    <input type="text" name="name" class="form-control" placeholder="Enter name..." required>
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Reineth C. Toñada" required>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label small fw-bold">YEAR LEVEL</label>
+                    <label class="form-label">Year Level</label>
                     <select name="year_level" class="form-select">
                         <option value="1st Year">1st Year</option>
                         <option value="2nd Year">2nd Year</option>
@@ -135,45 +70,45 @@ HTML_PAGE = """
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold">SECTION</label>
-                    <input type="text" name="section" class="form-control" placeholder="e.g., Zechariah" required>
+                    <label class="form-label">Section</label>
+                    <input type="text" name="section" class="form-control" placeholder="Zechariah" required>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold">FINAL GRADE</label>
-                    <input type="number" step="0.01" name="final_grade" class="form-control" placeholder="0-100" required>
+                    <label class="form-label">Final Grade</label>
+                    <input type="number" step="0.01" name="final_grade" class="form-control" placeholder="75.0" required>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold">ADDRESS</label>
-                    <input type="text" name="address" class="form-control" placeholder="e.g., Lemery, Iloilo" required>
+                    <label class="form-label">Address</label>
+                    <input type="text" name="address" class="form-control" placeholder="Lemery, Iloilo" required>
                 </div>
                 <div class="col-12 mt-4">
-                    <button type="submit" class="btn btn-submit w-100">Register Student</button>
+                    <button type="submit" class="btn btn-add w-100 p-2">Add Student to Records</button>
                 </div>
             </div>
         </form>
     </div>
 
     <div class="glass-card">
-        <h4 class="mb-4" style="color: #2d3436; font-weight: 700;">Academic Records</h4>
+        <h4 class="mb-3">Student Academic List</h4>
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-hover align-middle">
                 <thead>
                     <tr>
-                        <th>Student Details</th>
-                        <th>Year & Section</th>
+                        <th>Name & Address</th>
+                        <th>Year/Section</th>
                         <th>Grade</th>
                         <th>Status</th>
-                        <th class="text-center">Action</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for s in student_list %}
-                    <tr class="student-row">
+                    <tr>
                         <td>
-                            <div class="fw-bold" style="color: #2d3436;">{{ s.name }}</div>
-                            <div class="small text-muted">{{ s.address }}</div>
+                            <div class="fw-bold">{{ s.name }}</div>
+                            <small class="text-muted">{{ s.address }}</small>
                         </td>
-                        <td>{{ s.year_level }}<br><span class="text-muted small">{{ s.section }}</span></td>
+                        <td>{{ s.year_level }}<br><span class="small">{{ s.section }}</span></td>
                         <td class="fw-bold">{{ s.final_grade }}</td>
                         <td>
                             {% if s.status == 'Passed' %}
@@ -182,8 +117,8 @@ HTML_PAGE = """
                                 <span class="badge-fail">Failed</span>
                             {% endif %}
                         </td>
-                        <td class="text-center">
-                            <a href="/delete/{{ loop.index0 }}" class="delete-icon" onclick="return confirm('Remove {{ s.name }}?')">Delete</a>
+                        <td>
+                            <a href="/delete/{{ loop.index0 }}" class="delete-link" onclick="return confirm('Delete record?')">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -203,10 +138,13 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add_student():
-    # Capture data
-    grade_val = float(request.form.get('final_grade'))
-    
-    # Passing mark is 75
+    # FIXED: Added error handling for grade conversion
+    try:
+        raw_grade = request.form.get('final_grade')
+        grade_val = float(raw_grade) if raw_grade else 0.0
+    except ValueError:
+        grade_val = 0.0  # Default to 0 if input is not a number
+
     status = "Passed" if grade_val >= 75 else "Failed"
     
     new_student = {
