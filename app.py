@@ -1,19 +1,29 @@
 from flask import Flask, request, render_template_string, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 
-# Starting with your data
-# Each student now has a 'final_grade' and 'status'
-students = [
-    {
-        "name": "Reineth C. Toñada", 
-        "year_level": "4th Year", 
-        "section": "Zechariah", 
-        "address": "Brgy. Anabo, Lemery, Iloilo",
-        "final_grade": 85,
-        "status": "Passed"
-    }
-]
+# --- DATABASE CONFIGURATION ---
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'student_records.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# --- DATABASE MODEL ---
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    year_level = db.Column(db.String(20), nullable=False)
+    section = db.Column(db.String(50), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    final_grade = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+
+# Create the database and the table
+with app.app_context():
+    db.create_all()
 
 HTML_PAGE = """
 <!DOCTYPE html>
@@ -58,7 +68,7 @@ HTML_PAGE = """
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Final Grade</label>
-                    <input type="number" name="final_grade" class="form-control" placeholder="0-100" required>
+                    <input type="number" step="0.01" name="final_grade" class="form-control" placeholder="0-100" required>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Address</label>
@@ -98,7 +108,7 @@ HTML_PAGE = """
                         </span>
                     </td>
                     <td>
-                        <a href="/delete/{{ loop.index0 }}" class="btn-delete" onclick="return confirm('Delete this record?')">Delete</a>
+                        <a href="/delete/{{ s.id }}" class="btn-delete" onclick="return confirm('Delete this record?')">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -113,33 +123,40 @@ HTML_PAGE = """
 
 @app.route('/')
 def index():
-    return render_template_string(HTML_PAGE, student_list=students)
+    # Pull all records from the database
+    all_students = Student.query.all()
+    return render_template_string(HTML_PAGE, student_list=all_students)
 
 @app.route('/add', methods=['POST'])
 def add_student():
-    # Get grade and determine pass/fail
-    grade_val = float(request.form.get('final_grade'))
-    
-    # Simple logic: 75 and above is Passing
+    try:
+        grade_val = float(request.form.get('final_grade'))
+    except (ValueError, TypeError):
+        grade_val = 0.0
+
     status = "Passed" if grade_val >= 75 else "Failed"
     
-    new_student = {
-        "name": request.form.get('name'),
-        "year_level": request.form.get('year_level'),
-        "section": request.form.get('section'),
-        "address": request.form.get('address'),
-        "final_grade": grade_val,
-        "status": status
-    }
+    # Create new database entry
+    new_student = Student(
+        name=request.form.get('name'),
+        year_level=request.form.get('year_level'),
+        section=request.form.get('section'),
+        address=request.form.get('address'),
+        final_grade=grade_val,
+        status=status
+    )
     
-    students.append(new_student)
+    db.session.add(new_student)
+    db.session.commit()
     return redirect(url_for('index'))
 
-@app.route('/delete/<int:index>')
-def delete_student(index):
-    # Check if the index exists before popping
-    if 0 <= index < len(students):
-        students.pop(index)
+@app.route('/delete/<int:id>')
+def delete_student(id):
+    # Find student by their unique ID
+    student_to_delete = Student.query.get(id)
+    if student_to_delete:
+        db.session.delete(student_to_delete)
+        db.session.commit()
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
