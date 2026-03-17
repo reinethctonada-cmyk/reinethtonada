@@ -30,148 +30,148 @@ HTML_PAGE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management System</title>
+    <title>Student Records | Dark Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #4e54c8;
-            --secondary: #8f94fb;
-            --danger: #ff7675;
-            --success: #55efc4;
-            --dark: #2d3436;
+            --bg-gradient: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --neon-blue: #00d2ff;
+            --neon-purple: #9d50bb;
+            --passed-glow: #00ff88;
+            --failed-glow: #ff4b2b;
         }
         
         body { 
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
             min-height: 100vh;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 50px 0;
-            color: var(--dark);
-        }
-
-        .main-container {
-            max-width: 900px;
-            margin: auto;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: #ffffff;
+            padding: 60px 0;
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
         }
 
         h2, h3 {
+            background: linear-gradient(to right, #00d2ff, #9d50bb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-weight: 800;
-            color: #4e54c8;
-            letter-spacing: -1px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .form-label {
-            font-size: 0.85rem;
-            text-transform: uppercase;
+            color: #aaa;
+            font-size: 0.75rem;
             font-weight: 700;
-            color: #636e72;
-            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
 
         .form-control, .form-select {
-            border-radius: 10px;
-            padding: 12px;
-            border: 2px solid #eee;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: var(--secondary);
-            box-shadow: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #4e54c8, #8f94fb);
-            border: none;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white !important;
             border-radius: 12px;
-            padding: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.2s ease;
+            padding: 12px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(78, 84, 200, 0.3);
+        .form-control::placeholder { color: #666; }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            outline: none;
+        }
+
+        .btn-neon {
+            background: linear-gradient(45deg, #00d2ff, #9d50bb);
+            border: none;
+            color: white;
+            font-weight: 800;
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(157, 80, 187, 0.4);
+        }
+
+        .btn-neon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(157, 80, 187, 0.6);
+            color: white;
         }
 
         /* Table Styling */
-        .table thead th {
-            border: none;
-            color: #b2bec3;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-        }
-
+        .table { color: white; border-collapse: separate; border-spacing: 0 12px; }
+        .table thead th { border: none; color: #777; font-size: 0.7rem; text-transform: uppercase; }
+        
         .student-row {
-            background: #fff;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.03);
             transition: all 0.3s ease;
         }
-
+        
         .student-row:hover {
-            background: #fcfcff;
-            transform: scale(1.01);
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
         }
 
-        .badge-passed {
-            background-color: #d1f7e8;
-            color: #00b894;
-            padding: 8px 15px;
+        .student-row td { padding: 20px; border: none; }
+        .student-row td:first-child { border-radius: 15px 0 0 15px; }
+        .student-row td:last-child { border-radius: 0 15px 15px 0; }
+
+        .badge-passed { 
+            color: var(--passed-glow); 
+            border: 1px solid var(--passed-glow);
+            padding: 5px 15px;
             border-radius: 8px;
             font-weight: 700;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
         }
 
-        .badge-failed {
-            background-color: #ffeaa7;
-            color: #d63031;
-            padding: 8px 15px;
+        .badge-failed { 
+            color: var(--failed-glow); 
+            border: 1px solid var(--failed-glow);
+            padding: 5px 15px;
             border-radius: 8px;
             font-weight: 700;
+            box-shadow: 0 0 10px rgba(255, 75, 43, 0.2);
         }
 
-        .delete-link {
-            background: #fff5f5;
-            color: #ff7675;
-            padding: 8px 12px;
-            border-radius: 10px;
+        .delete-btn {
+            color: #ff4b2b;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.8rem;
-            transition: all 0.2s;
+            transition: 0.3s;
         }
 
-        .delete-link:hover {
-            background: #ff7675;
-            color: #fff;
-        }
+        .delete-btn:hover { color: #fff; text-shadow: 0 0 10px #ff4b2b; }
     </style>
 </head>
 <body>
 
-<div class="container main-container">
-    <div class="glass-card">
-        <h2 class="mb-4 text-center">Student Academic Portal</h2>
-        <form action="/add" method="POST">
+<div class="container" style="max-width: 950px;">
+    <div class="glass-card text-center">
+        <h2>Student Data Terminal</h2>
+        <p class="text-muted small">SECURE ACADEMIC RECORD MANAGEMENT</p>
+        
+        <form action="/add" method="POST" class="mt-4 text-start">
             <div class="row g-4">
-                <div class="col-md-7">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Ex: Reineth C. Toñada" required>
+                <div class="col-md-6">
+                    <label class="form-label">FULL NAME</label>
+                    <input type="text" name="name" class="form-control" placeholder="Reineth C. Toñada" required>
                 </div>
-                <div class="col-md-5">
-                    <label class="form-label">Year Level</label>
+                <div class="col-md-6">
+                    <label class="form-label">YEAR LEVEL</label>
                     <select name="year_level" class="form-select">
                         <option value="1st Year">1st Year</option>
                         <option value="2nd Year">2nd Year</option>
@@ -180,46 +180,46 @@ HTML_PAGE = """
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Section</label>
-                    <input type="text" name="section" class="form-control" placeholder="Ex: Zechariah" required>
+                    <label class="form-label">SECTION</label>
+                    <input type="text" name="section" class="form-control" placeholder="Zechariah" required>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Final Grade</label>
-                    <input type="number" step="0.01" name="final_grade" class="form-control" placeholder="0-100" required>
+                <div class="col-md-4">
+                    <label class="form-label">FINAL GRADE</label>
+                    <input type="number" step="0.01" name="final_grade" class="form-control" placeholder="0.00" required>
                 </div>
-                <div class="col-md-5">
-                    <label class="form-label">Residential Address</label>
-                    <input type="text" name="address" class="form-control" placeholder="Brgy. Anabo, Lemery" required>
+                <div class="col-md-4">
+                    <label class="form-label">ADDRESS</label>
+                    <input type="text" name="address" class="form-control" placeholder="Iloilo, Philippines" required>
                 </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary w-100 mt-2">Submit Record</button>
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-neon w-100">INITIALIZE RECORD</button>
                 </div>
             </div>
         </form>
     </div>
 
     <div class="glass-card">
-        <h3 class="mb-4">Student Records</h3>
+        <h3 class="mb-4">Database Registry</h3>
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table">
                 <thead>
                     <tr>
-                        <th style="width: 35%;">Name & Address</th>
-                        <th>Level/Section</th>
-                        <th>Grade</th>
-                        <th>Status</th>
-                        <th class="text-center">Action</th>
+                        <th>STUDENT PROFILE</th>
+                        <th>CLASS</th>
+                        <th>GRADE</th>
+                        <th>RESULT</th>
+                        <th class="text-center">TERMINATE</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for s in student_list %}
                     <tr class="student-row">
-                        <td class="py-3">
+                        <td>
                             <div class="fw-bold">{{ s.name }}</div>
-                            <div class="text-muted small">📍 {{ s.address }}</div>
+                            <div class="small text-muted" style="font-size: 0.7rem;">📍 {{ s.address }}</div>
                         </td>
                         <td>{{ s.year_level }}<br><span class="text-muted small">{{ s.section }}</span></td>
-                        <td class="fw-bold">{{ s.final_grade }}</td>
+                        <td class="fw-bold text-info">{{ s.final_grade }}</td>
                         <td>
                             {% if s.status == 'Passed' %}
                                 <span class="badge-passed">PASSED</span>
@@ -228,16 +228,13 @@ HTML_PAGE = """
                             {% endif %}
                         </td>
                         <td class="text-center">
-                            <a href="/delete/{{ s.id }}" class="delete-link" onclick="return confirm('Remove this student record?')">Remove</a>
+                            <a href="/delete/{{ s.id }}" class="delete-btn" onclick="return confirm('Permanently delete record?')">DELETE</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        {% if not student_list %}
-        <p class="text-center text-muted py-4">No records found. Add your first student above!</p>
-        {% endif %}
     </div>
 </div>
 
