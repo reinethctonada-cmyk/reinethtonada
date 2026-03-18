@@ -30,223 +30,165 @@ HTML_PAGE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Records | Admin</title>
+    <title>EduTrack | Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
-
         :root {
-            --accent: #00f2ff;
-            --secondary: #7000ff;
-            --bg-dark: #0a0b10;
-            --card-bg: rgba(20, 22, 35, 0.8);
+            --primary: #4f46e5;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --border-color: #e2e8f0;
         }
 
         body { 
-            background: radial-gradient(circle at top right, #1a1b2e, #0a0b10);
-            color: #e0e0e0;
-            font-family: 'Rajdhani', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding-top: 50px;
         }
 
-        /* Animated Background Mesh */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            opacity: 0.1;
-            z-index: -1;
-        }
+        .container { max-width: 1000px; }
 
-        .header-section {
-            padding: 40px 0;
-            text-align: center;
-        }
-
-        h2 {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            color: var(--accent);
-            text-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
-        }
-
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        /* Sidebar-style card for form */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: white;
             margin-bottom: 30px;
         }
 
-        .form-label {
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px;
             font-weight: 700;
-            color: var(--accent);
-            font-size: 0.8rem;
-            margin-bottom: 8px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
         }
+
+        .form-label { font-weight: 600; font-size: 0.85rem; color: #64748b; }
 
         .form-control, .form-select {
-            background: rgba(0, 0, 0, 0.3) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff !important;
+            border: 1px solid var(--border-color);
+            padding: 10px;
             border-radius: 8px;
-            transition: 0.3s;
         }
 
-        .form-control:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-        }
-
-        .btn-submit {
-            background: linear-gradient(90deg, var(--secondary), var(--accent));
+        .btn-primary {
+            background-color: var(--primary);
             border: none;
-            color: white;
-            font-weight: 700;
-            letter-spacing: 2px;
-            padding: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
             border-radius: 8px;
-            width: 100%;
-            transition: 0.4s;
+            transition: all 0.2s;
         }
 
-        .btn-submit:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 0 20px rgba(112, 0, 255, 0.4);
-            transform: translateY(-2px);
-        }
+        .btn-primary:hover { background-color: #4338ca; transform: translateY(-1px); }
 
-        /* Custom Table Styling */
-        .table { color: #fff; vertical-align: middle; }
-        .table thead th { 
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: #888;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-        }
-        
-        .student-row { border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
-        .student-row:hover { background: rgba(0, 242, 255, 0.03); }
+        /* Table Styling */
+        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .table { margin-bottom: 0; }
+        .table thead { background: #f1f5f9; }
+        .table th { border: none; padding: 15px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
+        .table td { padding: 18px 15px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
 
-        .status-pill {
-            padding: 4px 12px;
+        .status-badge {
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
-            display: inline-block;
         }
 
-        .status-passed { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; }
-        .status-failed { background: rgba(255, 75, 43, 0.1); color: #ff4b2b; border: 1px solid #ff4b2b; }
+        .passed { background: #dcfce7; color: #166534; }
+        .failed { background: #fee2e2; color: #991b1b; }
 
-        .action-icon {
-            color: #555;
-            transition: 0.3s;
-            text-decoration: none;
-        }
+        .delete-link { color: #94a3b8; text-decoration: none; transition: 0.2s; }
+        .delete-link:hover { color: #ef4444; }
 
-        .action-icon:hover { color: #ff4b2b; }
-
+        .address-text { color: #94a3b8; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header-section">
-        <h2><i class="fas fa-microchip me-2"></i>Quantum System</h2>
-        <p class="text-muted">ENCRYPTED STUDENT DATABASE v2.0.6</p>
-    </div>
-
     <div class="row">
-        <div class="col-lg-4">
-            <div class="glass-card">
-                <h4 class="mb-4 text-white"><i class="fas fa-plus-circle me-2"></i>New Entry</h4>
-                <form action="/add" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">STUDENT NAME</label>
-                        <input type="text" name="name" class="form-control" placeholder="e.g. John Doe" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">YEAR LEVEL</label>
-                        <select name="year_level" class="form-select">
-                            <option value="1st Year">1st Year</option>
-                            <option value="2nd Year">2nd Year</option>
-                            <option value="3rd Year">3rd Year</option>
-                            <option value="4th Year">4th Year</option>
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label">SECTION</label>
-                            <input type="text" name="section" class="form-control" placeholder="A-1" required>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Add New Student</div>
+                <div class="card-body p-4">
+                    <form action="/add" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Juan Dela Cruz" required>
                         </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label">GRADE</label>
-                            <input type="number" step="0.01" name="final_grade" class="form-control" placeholder="0.0" required>
+                        <div class="mb-3">
+                            <label class="form-label">Year Level</label>
+                            <select name="year_level" class="form-select">
+                                <option>1st Year</option>
+                                <option>2nd Year</option>
+                                <option>3rd Year</option>
+                                <option>4th Year</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">LOCATION/ADDRESS</label>
-                        <input type="text" name="address" class="form-control" placeholder="City, Country" required>
-                    </div>
-                    <button type="submit" class="btn btn-submit">COMMIT TO CLOUD</button>
-                </form>
+                        <div class="mb-3">
+                            <label class="form-label">Section</label>
+                            <input type="text" name="section" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Final Grade</label>
+                            <input type="number" step="0.01" name="final_grade" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea name="address" class="form-control" rows="2" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save Record</button>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <div class="glass-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="mb-0 text-white"><i class="fas fa-database me-2"></i>Active Records</h4>
-                    <span class="badge bg-dark text-info border border-info">{{ student_list|length }} ENTRIES</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>IDENTIFIER</th>
-                                <th>CLASS</th>
-                                <th>SCORE</th>
-                                <th>STATUS</th>
-                                <th class="text-end">ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for s in student_list %}
-                            <tr class="student-row">
-                                <td>
-                                    <div class="fw-bold">{{ s.name }}</div>
-                                    <div class="text-muted" style="font-size: 0.7rem;"><i class="fas fa-map-marker-alt me-1"></i>{{ s.address }}</div>
-                                </td>
-                                <td>
-                                    <div class="small">{{ s.year_level }}</div>
-                                    <div class="text-info small" style="font-size: 0.7rem;">{{ s.section }}</div>
-                                </td>
-                                <td class="fw-bold">{{ s.final_grade }}</td>
-                                <td>
-                                    {% if s.status == 'Passed' %}
-                                        <span class="status-pill status-passed">PASSED</span>
-                                    {% else %}
-                                        <span class="status-pill status-failed">FAILED</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-end">
-                                    <a href="/delete/{{ s.id }}" class="action-icon" onclick="return confirm('Wipe data?')">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+        <div class="col-md-8">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Grade</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in student_list %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ s.name }}</div>
+                                <div class="address-text">{{ s.address }}</div>
+                            </td>
+                            <td>{{ s.year_level }}<br><small class="text-muted">{{ s.section }}</small></td>
+                            <td class="fw-bold">{{ s.final_grade }}</td>
+                            <td>
+                                <span class="status-badge {% if s.status == 'Passed' %}passed{% else %}failed{% endif %}">
+                                    {{ s.status | upper }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/delete/{{ s.id }}" class="delete-link" onclick="return confirm('Delete this record?')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
