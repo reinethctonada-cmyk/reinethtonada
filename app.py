@@ -30,167 +30,223 @@ HTML_PAGE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduTrack | Management</title>
+    <title>EduTrack Pro | Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --bg-body: #f8fafc;
-            --text-main: #1e293b;
-            --border-color: #e2e8f0;
+            --sidebar-bg: #0f172a;
+            --main-bg: #f1f5f9;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --glass: rgba(255, 255, 255, 0.9);
         }
 
         body { 
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding-top: 50px;
+            background-color: var(--main-bg);
+            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
         }
 
-        .container { max-width: 1000px; }
-
-        /* Sidebar-style card for form */
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            background: white;
-            margin-bottom: 30px;
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 30px 20px;
+            position: fixed;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
         }
 
-        .card-header {
-            background: white;
-            border-bottom: 1px solid var(--border-color);
-            padding: 20px;
+        .brand {
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
         }
 
-        .form-label { font-weight: 600; font-size: 0.85rem; color: #64748b; }
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .form-label { font-weight: 600; font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
 
         .form-control, .form-select {
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 10px;
+            background: #f8fafc;
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            border: none;
-            padding: 10px 20px;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.2s;
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        .btn-primary:hover { background-color: #4338ca; transform: translateY(-1px); }
+        /* Stats & Table */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
 
-        /* Table Styling */
-        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .table { margin-bottom: 0; }
-        .table thead { background: #f1f5f9; }
-        .table th { border: none; padding: 15px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
-        .table td { padding: 18px 15px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
+        .table thead {
+            background: #f8fafc;
+            border-bottom: 2px solid #f1f5f9;
+        }
 
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
+        .table th { padding: 20px; color: #64748b; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+        .table td { padding: 20px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
+        
+        .table tbody tr:hover { background-color: #f8fafc; }
+
+        /* Status Badges */
+        .badge-custom {
+            padding: 6px 14px;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 700;
         }
+        .bg-pass { background: #dcfce7; color: #15803d; }
+        .bg-fail { background: #fee2e2; color: #b91c1c; }
 
-        .passed { background: #dcfce7; color: #166534; }
-        .failed { background: #fee2e2; color: #991b1b; }
+        .btn-save {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
 
-        .delete-link { color: #94a3b8; text-decoration: none; transition: 0.2s; }
-        .delete-link:hover { color: #ef4444; }
+        .btn-save:hover { background: var(--accent-hover); transform: translateY(-2px); color: white; }
 
-        .address-text { color: #94a3b8; font-size: 0.8rem; }
+        .student-name { font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+        .student-meta { font-size: 0.8rem; color: #94a3b8; }
+        
+        .delete-btn {
+            background: #fff1f2;
+            color: #e11d48;
+            padding: 8px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .delete-btn:hover { background: #e11d48; color: white; }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">Add New Student</div>
-                <div class="card-body p-4">
-                    <form action="/add" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" placeholder="Juan Dela Cruz" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Year Level</label>
-                            <select name="year_level" class="form-select">
-                                <option>1st Year</option>
-                                <option>2nd Year</option>
-                                <option>3rd Year</option>
-                                <option>4th Year</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Section</label>
-                            <input type="text" name="section" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Final Grade</label>
-                            <input type="number" step="0.01" name="final_grade" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Address</label>
-                            <textarea name="address" class="form-control" rows="2" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Save Record</button>
-                    </form>
+<div class="sidebar">
+    <div class="brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        EduTrack Pro
+    </div>
+    
+    <div class="form-card">
+        <h6 class="mb-4 fw-bold">Registration</h6>
+        <form action="/add" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Juan Dela Cruz" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Year</label>
+                    <select name="year_level" class="form-select">
+                        <option>1st Year</option><option>2nd Year</option>
+                        <option>3rd Year</option><option>4th Year</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Section</label>
+                    <input type="text" name="section" class="form-control" required>
                 </div>
             </div>
-        </div>
-
-        <div class="col-md-8">
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Class</th>
-                            <th>Grade</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for s in student_list %}
-                        <tr>
-                            <td>
-                                <div class="fw-bold">{{ s.name }}</div>
-                                <div class="address-text">{{ s.address }}</div>
-                            </td>
-                            <td>{{ s.year_level }}<br><small class="text-muted">{{ s.section }}</small></td>
-                            <td class="fw-bold">{{ s.final_grade }}</td>
-                            <td>
-                                <span class="status-badge {% if s.status == 'Passed' %}passed{% else %}failed{% endif %}">
-                                    {{ s.status | upper }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="/delete/{{ s.id }}" class="delete-link" onclick="return confirm('Delete this record?')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="mb-3">
+                <label class="form-label">Final Grade</label>
+                <input type="number" step="0.01" name="final_grade" class="form-control" required>
             </div>
+            <div class="mb-4">
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control" rows="2" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-save w-100">Add to Records</button>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Student Directory</h2>
+        <span class="text-muted">Total Records: <strong>{{ student_list|length }}</strong></span>
+    </div>
+
+    <div class="table-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student Details</th>
+                    <th>Classification</th>
+                    <th>Performance</th>
+                    <th>Result</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in student_list %}
+                <tr>
+                    <td>
+                        <div class="student-name">{{ s.name }}</div>
+                        <div class="student-meta">{{ s.address }}</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ s.year_level }}</div>
+                        <div class="student-meta">Section {{ s.section }}</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold">{{ s.final_grade }}%</div>
+                    </td>
+                    <td>
+                        <span class="badge-custom {% if s.status == 'Passed' %}bg-pass{% else %}bg-fail{% endif %}">
+                            {{ s.status | upper }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <a href="/delete/{{ s.id }}" class="delete-btn" onclick="return confirm('Delete this record?')">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if not student_list %}
+        <div class="text-center p-5 text-muted">
+            <p>No student records found. Add a student to get started.</p>
         </div>
+        {% endif %}
     </div>
 </div>
 
